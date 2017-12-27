@@ -99,7 +99,7 @@ window.ExampleRunner = (function() {
                     }
                 },
 
-                bundles: { },
+                bundles: {},
 
                 map: {
                     "app": "app",
@@ -139,11 +139,17 @@ window.ExampleRunner = (function() {
                     main: kendoPackage.main,
                     defaultExtension: kendoPackage.defaultExtension || 'js'
                 };
-
                 /* Only include legacy Kendo UI configuration when it is included into the auto imports */
-                if (kendoPackage.module === '@progress/kendo-ui') {
+                if (kendoPackage.module === '@progress/kendo-ui'
+                    || kendoPackage.module === 'jquery') {
                     mapKendoConfiguration(config);
+                } else if (!SYSTEM_BUNDLES.filter(function(bundle) { return bundle.name === kendoPackage.module; }).length) {
+                    config.packages[kendoPackage.module] = {
+                        main: kendoPackage.main || 'dist/npm/js/main.js',
+                        defaultExtension: kendoPackage.defaultExtension || 'js'
+                    };
                 }
+
             });
 
             if (trackjs) {
@@ -155,15 +161,6 @@ window.ExampleRunner = (function() {
                     'raven-js': npmUrl + "/raven-js"
                 };
             }
-
-            modules.forEach(function(directive) {
-                if (!SYSTEM_BUNDLES.filter(function(bundle) { return bundle.name === directive.module; }).length) {
-                    config.packages[directive.module] = {
-                        main: directive.main || 'dist/npm/js/main.js',
-                        defaultExtension: directive.defaultExtension || 'js'
-                    };
-                }
-            });
 
             SYSTEM_BUNDLES.forEach(function(bundle) {
                 var paths = [ bundle.name ];
