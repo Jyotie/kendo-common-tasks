@@ -135,21 +135,19 @@ window.ExampleRunner = (function() {
 
             /* Add Kendo Packages */
             modules.forEach(function(kendoPackage) {
-                config.packages[kendoPackage.module] = {
-                    main: kendoPackage.main,
-                    defaultExtension: kendoPackage.defaultExtension || 'js'
-                };
+                var mainFile = '';
                 /* Only include legacy Kendo UI configuration when it is included into the auto imports */
-                if (kendoPackage.module === '@progress/kendo-ui'
-                    || kendoPackage.module === 'jquery') {
+                if (kendoPackage.module === '@progress/kendo-ui' || kendoPackage.module === 'jquery') {
+                    mainFile = kendoPackage.main;
                     mapKendoConfiguration(config);
                 } else if (!SYSTEM_BUNDLES.filter(function(bundle) { return bundle.name === kendoPackage.module; }).length) {
-                    config.packages[kendoPackage.module] = {
-                        main: kendoPackage.main || 'dist/npm/js/main.js',
-                        defaultExtension: kendoPackage.defaultExtension || 'js'
-                    };
+                    mainFile = kendoPackage.main || 'dist/npm/js/main.js';
                 }
 
+                config.packages[kendoPackage.module] = {
+                    main: mainFile,
+                    defaultExtension: kendoPackage.defaultExtension || 'js'
+                };
             });
 
             if (trackjs) {
